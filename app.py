@@ -317,18 +317,22 @@ def home():
                 try:
                     song_data = genius.search_song(song_name, artist)
 
-                    print(song_data)
-
                     print("SONG:", song_name)
-                    print("RESULT:", song_data)
+                    print("ARTIST:", artist)
+                    print("GENIUS RESULT:", song_data)
 
-                    if song_data and song_data.lyrics:
-                        lyrics = song_data.lyrics
+                    if song_data:
+                        print("GENIUS URL:", song_data.url)
+
+                        if song_data.lyrics:
+                            lyrics = song_data.lyrics
+                        else:
+                            lyrics = "Genius şarkıyı buldu ama sözleri çekemedi."
                     else:
-                        lyrics = "Söz bulunamadı"
+                        lyrics = "Genius şarkıyı bulamadı."
 
                 except Exception as e:
-                    print("LYRICS ERROR:", e)
+                    print("LYRICS ERROR:", repr(e))
                     lyrics = "Sözler yüklenemedi"
 
                 # 🚫 FILTER CHECK
