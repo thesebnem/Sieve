@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Sieve 🎧</title>
+
+<style>
+body{
+    <div class="bg-blobs"></div>
+    margin:0;
+    font-family:Arial;
+    background:#0b0014;
+    color:white;
+    overflow-x:hidden;.suggestActive{
+    background:#b84dff !important;
+    color:white;
+    margin:0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: radial-gradient(circle at top, #1a0033 0%, #0b0014 60%, #05000a 100%);
+    color:white;
+    overflow-x:hidden;
+}
+}
+
+/* INTRO */
+#intro{
+    position:fixed;
+    width:100%;
+    height:100%;
+    background: radial-gradient(circle, #1a0033, #0b0014);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    z-index:999;
+    backdrop-filter: blur(10px);
+}
+
+.logoAnim{
+    font-size:70px;
+    animation:pop 1s ease;
+}
+
+.titleAnim{
+    font-size:45px;
+    font-weight:bold;
+    color:#b84dff;
+    margin-top:10px;
+    animation:fadeUp 1.5s ease;
+}
+
+#playlistContent{
+    margin-top:20px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.subAnim{
+    color:#aaa;
+    animation:fadeUp 2s ease;
+}
+
+#intro button{
+    margin-top:25px;
+    padding:14px 26px;
+    background:linear-gradient(135deg,#b84dff,#7a2cff);
+    border:none;
+    color:white;
+    border-radius:14px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+#intro button:hover{
+    transform:scale(1.05);
+}
+
+/* APP */
+#app{
+    display:none;
+}
+
+/* SIDEBAR */
+.sidebar{
+    width:220px;
+    height:100vh;
+    background:rgba(18,0,34,0.6);
+    backdrop-filter: blur(15px);
+    border-right:1px solid rgba(255,255,255,0.05);
+    padding:20px;
+    position:fixed;
+    left:0;
+    top:0;
+    overflow-y:auto;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+    color:#b84dff;
+    margin-bottom:25px;
+    letter-spacing:1px;
+}
+
+.menuItem{
+    background:#1a0033;
+    padding:10px;
+    border-radius:10px;
+    margin-top:8px;
+    cursor:pointer;
+    transition:0.2s;
+    color:white;
+}
+
+.menuItem:hover{
+    background:#b84dff;
+    transform:scale(1.03);
+}
+
+.sidebar h4{
+    margin-top:25px;
+    color:#b84dff;
+}
+
+.sidebar p{
+    color:#bbb;
+    font-size:14px;
+}
+.sidebar input{
+    width:100%;
+    box-sizing:border-box;
+}
+/* MAIN */
+.main{
+    margin-left:260px;
+    padding:40px;
+}
+
+<div id="playlistPage" style="display:none;">
+    <h1>🎧 Playlist</h1>
+    <div id="playlistContent"></div>
+</div>
+
+/* SEARCH */
+.searchBox{
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+}
+
+input{
+    width:320px;
+    padding:14px;
+    border-radius:14px;
+    border:1px solid transparent;
+    background:#1a0033;
+    color:#b84dff;
+    transition:0.2s;
+}
+
+input:focus{
+    outline:none;
+    border:1px solid #b84dff;
+    box-shadow:0 0 10px #b84dff55;
+}
+
+button{
+    padding:12px 18px;
+    background:linear-gradient(135deg,#b84dff,#7a2cff);
+    border:none;
+    border-radius:12px;
+    color:white;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+button:hover{
+    transform:scale(1.05);
+}
+
+/* CARD */
+.card{
+    margin-top:25px;
+    background:rgba(26,0,51,0.55);
+    backdrop-filter: blur(20px);
+    padding:25px;
+    border-radius:24px;
+    width:700px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.6);
+    border:1px solid rgba(255,255,255,0.06);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-3px);
+}
+
+.bg-blobs{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    z-index:0;
+    overflow:hidden;
+}
+
+.bg-blobs::before,
+.bg-blobs::after{
+    content:"";
+    position:absolute;
+    width:400px;
+    height:400px;
+    background:#b84dff;
+    filter:blur(120px);
+    opacity:0.25;
+    border-radius:50%;
+    animation:float 8s ease-in-out infinite;
+}
+
+.bg-blobs::after{
+    right:0;
+    bottom:0;
+    background:#3c7bff;
+    animation-delay:2s;
+}
+.songHeader img{
+    border-radius:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+}
+
+.songHeader h2{
+    margin:0;
+    font-size:22px;
+}
+
+.songHeader p{
+    color:#aaa;
+}
+
+@keyframes float{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-40px)}
+}
+
+/* SONG HEADER */
+.songHeader{
+    display:flex;
+    gap:20px;
+    align-items:center;
+}
+
+.songHeader img{
+    border-radius:15px;
+}
+
+/* STATS */
+.stats{
+    margin-top:15px;
+    display:flex;
+    gap:15px;
+    flex-wrap:wrap;
+    
+}
+
+.stat{
+    background:#2a004d;
+    padding:10px 15px;
+    border-radius:10px;
+}
+
+/* LYRICS */
+.lyrics{
+    margin-top:20px;
+    background:#120022;
+    padding:15px;
+    border-radius:12px;
+    max-height:250px;
+    overflow-y:auto;
+    white-space:pre-wrap;
+    line-height:1.5;
+}
+
+/* RECOMMENDATIONS */
+.recommendations{
+    margin-top:20px;
+}
+/* AUTOCOMPLETE */
+#suggestBox{
+    width:320px;
+    margin-top:10px;
+}
+
+.suggestItem{
+    background:#1a0033;
+    padding:10px;
+    border-radius:10px;
+    margin-top:5px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.suggestItem:hover{
+    background:#b84dff;
+}
+.recItem{
+    background:#2a004d;
+    padding:5px 8px;
+    border-radius:10px;
+    margin-top:6px;
+    font-size:12px;
+
+    display:inline-block;
+    max-width:100%;
+}
+
+.recItem:hover{
+    background:#b84dff;
+    transform: scale(1.03);
+}
+.library p{
+    padding:6px;
+    cursor:pointer;
+    border-radius:8px;
+}
+
+.library p:hover{
+    background:#2a004d;
+}
+.songCard{
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+    background:#1a0033;
+    padding:12px;
+    border-radius:15px;
+
+    margin-top:10px;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.songCard:hover{
+    transform:translateX(5px) scale(1.02);
+    background:#2a004d;
+}
+
+.songCover{
+    width:60px;
+    height:60px;
+    border-radius:12px;
+    flex-shrink:0;
+
+    object-fit:cover;
+    background:#2a004d;
+}
+
+.songInfo h4{
+    margin:0;
+    font-size:15px;
+}
+
+.songInfo p{
+    margin:4px 0 0;
+    color:#aaa;
+    font-size:12px;
+}
+.filterChip{
+    display:inline-block;
+    background:#b84dff;
+    color:white;
+
+    padding:2px 4px;   /* 🔥 daha küçük */
+    font-size:10px;    /* 🔥 daha küçük */
+
+    border-radius:6px;
+    margin:2px 2px 0 0;
+
+    max-width:90px;    /* 🔥 önemli */
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+#filterBox{
+    width:100%;
+    display:flex;
+    flex-wrap:wrap;
+    gap:3px;
+}
+/* LOADING */
+#loading{
+    display:none;
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.7);
+    justify-content:center;
+    align-items:center;
+    font-size:24px;
+    z-index:999;
+}
+
+/* ANIMATIONS */
+@keyframes pop{
+    0%{transform:scale(0);opacity:0;}
+    100%{transform:scale(1);opacity:1;}
+}
+
+@keyframes fadeUp{
+    0%{transform:translateY(20px);opacity:0;}
+    100%{transform:translateY(0);opacity:1;}
+}
+.analysisSection{
+    margin-top:25px;
+}
+
+.barTitle{
+    margin-top:15px;
+    margin-bottom:5px;
+    color:#ddd;
+}
+
+.bar{
+    width:100%;
+    height:14px;
+    background:#120022;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.fill{
+    height:100%;
+    background:linear-gradient(
+        90deg,
+        #b84dff,
+        #ff6bff
+    );
+    border-radius:20px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- INTRO -->
+<div id="intro">
+    <div class="logoAnim">🎧</div>
+    <div class="titleAnim">SIEVE</div>
+    <p class="subAnim">Müzik Analiz Sistemi</p>
+    <button onclick="startApp()">Başla</button>
+</div>
+
+<!-- LOADING -->
+<div id="loading">⏳ Analiz ediliyor...</div>
+
+<!-- APP -->
+<div id="app">
+
+<div class="sidebar">
+    <div class="logo">🎧 Sieve</div>
+
+<div class="menuItem" onclick="showPage('home')">🏠 Ana Sayfa</div>
+
+<div class="menuItem" onclick="showPage('history')">
+📜 Geçmiş
+</div>
+
+<div class="menuItem" onclick="showPage('playlist')">
+🎵 Öneriler
+</div>
+
+<div class="menuItem" onclick="showPage('stats')">
+📊 İstatistikler
+</div>
+
+<div class="menuItem" onclick="showPage('settings')">
+⚙️ Ayarlar
+</div>
+
+<h4>🎵 Kitaplık</h4>
+
+<div class="library">
+    <p onclick="showPlaylist('happy')">🔥 Mutlu</p>
+    <p onclick="showPlaylist('sad')">😢 Üzgün</p>
+    <p onclick="showPlaylist('energy')">⚡ Enerjik</p>
+    <p onclick="showPlaylist('chill')">🌙 Sakin</p>
+</div>
+
+<h4>📊 İstatistikler</h4>
+    <p>Analiz edilen: {{ history|length }}</p>
+   
+<h4>🚫 Filtre</h4>
+
+<input id="filterInput" placeholder="Engellemek istediğin kelimeler " />
+
+<p id="filterInfo" style="color:#aaa;font-size:12px;"></p>
+
+<div id="filterBox"></div>
+
+<input type="hidden" name="filters" id="filtersHidden">
+</div>
+
+<div class="main">
+
+<div id="homePage">
+
+    <h1>Sieve Müzik Analiz Sistemi</h1>
+
+    <form method="POST" onsubmit="showLoading()">
+        <div class="searchBox">
+            <input
+    type="text"
+    name="song"
+    id="songInput"
+    placeholder="Şarkı yaz..."
+    autocomplete="off"
+>
+            <button type="submit">Analiz Et</button>
+        </div>
+        <div id="suggestBox"></div>
+    </form>
+
+    {% if result %}
+
+    <div class="card">
+
+        <div class="songHeader">
+            <img src="{{ result.cover }}" width="180">
+            <div>
+                <h2>{{ result.song }}</h2>
+                <p>🎤 {{ result.artist }}</p>
+            </div>
+        </div>
+
+        <div class="stats">
+<script>
+    setVibeBackground("{{ result.mood }}", {{ result.score }});
+</script>
+            <div class="stat">🔞 Küfür: {{ result.profanity }}</div>
+            <div class="stat">🎭 Mood: {{ result.mood }}</div>
+            <div class="stat">📊 Score: {{ result.score }}</div>
+            
+            <div class="stat">❤️ Romantik: {{ result.romantic }}</div>
+            <div class="stat">⚡ Enerji: {{ result.energy }}</div>
+            <div class="stat">😢 Hüzün: {{ result.sadness }}</div>
+        </div>
+       <div class="analysisSection">
+
+            <h3>📊 İçerik Analizi</h3>
+
+            <div class="barTitle">❤️ Romantiklik</div>
+            <div class="bar">
+                <div class="fill" style="width:{{ result.romantic * 10 }}%"></div>
+            </div>
+
+            <div class="barTitle">⚡ Enerji</div>
+            <div class="bar">
+                <div class="fill" style="width:{{ result.energy * 10 }}%"></div>
+            </div>
+
+            <div class="barTitle">😢 Hüzün</div>
+            <div class="bar">
+                <div class="fill" style="width:{{ result.sadness * 10 }}%"></div>
+            </div>
+
+        </div>
+
+        <!-- PLAYER -->
+        {% if result.preview %}
+        <div style="margin-top:20px;">
+            <audio controls style="width:100%;">
+                <source src="{{ result.preview }}" type="audio/mpeg">
+            </audio>
+        </div>
+        {% else %}
+        <p style="color:#aaa;margin-top:15px;">🔇 Preview yok</p>
+        {% endif %}
+
+        {% if result.spotify_url %}
+        <div style="margin-top:15px;">
+            <a href="{{ result.spotify_url }}" target="_blank">
+                <button>Spotify'da Aç 🎧</button>
+            </a>
+        </div>
+        {% endif %}
+
+        <div class="lyrics">
+            {{ result.lyrics }}
+        </div>
+
+        <div class="recommendations">
+    <h3>🎧 Sana Önerilenler</h3>
+
+    <div class="recScroll">
+
+        {% for song in result.recommendations %}
+
+        <div class="songCard" onclick="selectSong('{{ song.name }}')">
+
+            <img src="{{ song.cover }}" class="songCover">
+
+            <div class="songInfo">
+                <h4>{{ song.name }}</h4>
+                <p>Önerilen Şarkı</p>
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+</div>
+
+    {% endif %}
+
+<div id="historyPage" style="display:none;">
+
+    <h1>📜 Analiz Geçmişi</h1>
+
+    {% if history %}
+
+        {% for item in history %}
+
+        <div class="card" style="width:500px; margin-top:15px;">
+            <h3>{{ item.song }}</h3>
+            <p>🎤 {{ item.artist }}</p>
+            <p>📊 Skor: {{ item.score }}</p>
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>Henüz analiz yapılmadı.</p>
+
+    {% endif %}
+
+</div>
+
+<div id="playlistPage" style="display:none;">
+    <h1>🎵 Playlist</h1>
+    <div id="playlistContent"></div>
+</div>
+
+<div id="statsPage" style="display:none;">
+    <h1>📊 İstatistikler</h1>
+    <p>Buraya grafikler gelecek.</p>
+</div>
+
+<div id="settingsPage" style="display:none;">
+    <h1>⚙️ Ayarlar</h1>
+    <p>Tema ve filtre ayarları burada olacak.</p>
+</div>
+
+</div>
+</div>
+
+<script>
+function startApp(){
+    document.getElementById("intro").style.opacity="0";
+    setTimeout(()=>{
+        document.getElementById("intro").style.display="none";
+        document.getElementById("app").style.display="block";
+    },600);
+    sessionStorage.setItem("sieve_started", "true");
+}
+window.onload = function() {
+
+    if (sessionStorage.getItem("sieve_started")) {
+
+        document.getElementById("intro").style.display = "none";
+        document.getElementById("app").style.display = "block";
+
+    }
+}
+
+function setVibeBackground(mood, score){
+    let body = document.body;
+
+    if(score > 80){
+        body.style.background = "linear-gradient(135deg,#1a0033,#b84dff)";
+    }
+    else if(mood === "Yoğun içerik"){
+        body.style.background = "linear-gradient(135deg,#330000,#ff3c3c)";
+    }
+    else if(score < 50){
+        body.style.background = "linear-gradient(135deg,#001133,#3c7bff)";
+    }
+    else{
+        body.style.background = "linear-gradient(135deg,#0b0014,#2a004d)";
+    }
+}
+
+function showLoading(){
+    document.getElementById("loading").style.display="flex";
+}
+
+// AUTOCOMPLETE (TEK VE DOĞRU VERSİYON)
+const input = document.getElementById("songInput");
+const box = document.getElementById("suggestBox");
+
+if (input && box) {
+
+    input.addEventListener("input", async () => {
+
+        const q = input.value.trim();
+
+        if (q.length < 2) {
+            box.innerHTML = "";
+            return;
+        }
+
+        const res = await fetch("/suggest?q=" + q);
+        const data = await res.json();
+
+        box.innerHTML = "";
+
+        data.results.forEach(song => {
+
+            const div = document.createElement("div");
+            div.className = "recItem";
+            div.textContent = song;
+
+            div.onclick = () => {
+                input.value = song;
+                box.innerHTML = "";
+                input.form.submit(); // 🔥 en temiz submit
+            };
+
+            box.appendChild(div);
+        });
+    });
+}
+let filters = [];
+
+const filterInput = document.getElementById("filterInput");
+const filterBox = document.getElementById("filterBox");
+const hidden = document.getElementById("filtersHidden");
+
+document.getElementById("filterInput").addEventListener("input", () => {
+    document.getElementById("filterInfo").innerText =
+        "Enter ile kelime ekle → " + document.getElementById("filterInput").value;
+});
+
+filterInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        e.preventDefault();
+
+        const value = filterInput.value.trim().toLowerCase();
+        if (!value) return;
+
+        if (filters.includes(value)) return;
+
+        filters.push(value);
+        renderFilters();
+
+        filterInput.value = "";
+    }
+});
+
+function renderFilters() {
+    filterBox.innerHTML = "";
+
+    filters.forEach((word, index) => {
+        const div = document.createElement("div");
+        div.className = "filterChip";
+        div.textContent = word;
+
+        div.onclick = () => {
+            filters.splice(index, 1);
+            renderFilters();
+        };
+
+        filterBox.appendChild(div);
+    });
+
+    hidden.value = filters.join(",");
+}
+
+function showPage(page){
+
+    document.getElementById("homePage").style.display = "none";
+    document.getElementById("historyPage").style.display = "none";
+    document.getElementById("playlistPage").style.display = "none";
+    document.getElementById("statsPage").style.display = "none";
+    document.getElementById("settingsPage").style.display = "none";
+
+    document.getElementById(page + "Page").style.display = "block";
+}
+
+const playlists = {
+    happy: [
+        "Blinding Lights - The Weeknd",
+        "Levitating - Dua Lipa",
+        "Can’t Stop the Feeling - Justin Timberlake",
+        "Dudu - Tarkan",
+        "Walking on Sunshine - Katrina"
+    ],
+    sad: [
+        "Someone Like You - Adele",
+        "Fix You - Coldplay",
+        "Let Her Go - Passenger",
+        "Gülümse - Sezen Aksu",
+        "Lonely - Justin Bieber"
+    ],
+    energy: [
+        "Believer - Imagine Dragons",
+        "Till I Collapse - Eminem",
+        "Power - Kanye West",
+        "Stronger - Kanye West",
+        "Hall of Fame - The Script"
+    ],
+    chill: [
+        "Sunflower - Post Malone",
+        "Yellow - Coldplay",
+        "Night Changes - One Direction",
+        "Stay - The Kid LAROI",
+        "Lovely - Billie Eilish"
+    ]
+};
+
+function getCover(song){
+    return `https://source.unsplash.com/200x200/?music,${encodeURIComponent(song)}`;
+}
+
+function getCover(song){
+    return `https://picsum.photos/seed/${encodeURIComponent(song)}/200/200`;
+}
+
+function showPlaylist(type){
+
+    document.getElementById("playlistPage").style.display = "block";
+
+    const content = document.getElementById("playlistContent");
+    content.innerHTML = "";
+
+    playlists[type].forEach(song => {
+
+        const div = document.createElement("div");
+        div.className = "songCard";
+
+        div.innerHTML = `
+    <img src="${getCover(song)}" class="songCover">
+
+    <div class="songInfo">
+        <h4>${song}</h4>
+        <p>${type} playlist</p>
+    </div>
+`;
+
+        div.onclick = () => {
+            document.getElementById("songInput").value = song;
+            document.getElementById("songInput").form.submit();
+        };
+
+        content.appendChild(div);
+    });
+}
+
+</script>
+</body>
+</html>
