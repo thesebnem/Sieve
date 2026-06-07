@@ -310,7 +310,10 @@ def home():
                 lyrics = "Söz bulunamadı"
 
                 try:
-                    song_data = genius.search_song(song_name, artist)
+                    song_data = genius.search_song(song_name)
+
+                    print("SONG:", song_name)
+                    print("RESULT:", song_data)
 
                     if song_data and song_data.lyrics:
                         lyrics = song_data.lyrics
