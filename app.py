@@ -312,6 +312,8 @@ def home():
                 try:
                     song_data = genius.search_song(song_name)
 
+                    print(song_data)
+
                     print("SONG:", song_name)
                     print("RESULT:", song_data)
 
