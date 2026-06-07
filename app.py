@@ -307,19 +307,19 @@ def home():
                 spotify_url = track["external_urls"]["spotify"]
 
                 # 🎤 LYRICS
-lyrics = "Söz bulunamadı"
+                lyrics = "Söz bulunamadı"
 
-try:
-    song_data = genius.search_song(song_name, artist)
+                try:
+                    song_data = genius.search_song(song_name, artist)
 
-    if song_data and song_data.lyrics:
-        lyrics = song_data.lyrics
-    else:
-        lyrics = "Söz bulunamadı"
+                    if song_data and song_data.lyrics:
+                        lyrics = song_data.lyrics
+                    else:
+                       lyrics = "Söz bulunamadı"
 
-except Exception as e:
-    print("LYRICS ERROR:", e)
-    lyrics = "Sözler yüklenemedi"
+                except Exception as e:
+                    print("LYRICS ERROR:", e)
+                    lyrics = "Sözler yüklenemedi"
 
                 # 🚫 FILTER CHECK
                 if user_filters and any(word in lyrics.lower() for word in user_filters):
