@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import lyricsgenius
+import requests
 
 app = Flask(__name__)
 
@@ -311,29 +312,45 @@ def home():
                 preview = track.get("preview_url")
                 spotify_url = track["external_urls"]["spotify"]
 
-                # 🎤 LYRICS
+                                # 🎤 LYRICS
                 lyrics = "Söz bulunamadı"
 
                 try:
                     song_data = genius.search_song(song_name, artist)
 
-                    print("SONG:", song_name)
-                    print("ARTIST:", artist)
-                    print("GENIUS RESULT:", song_data)
-
-                    if song_data:
-                        print("GENIUS URL:", song_data.url)
-
-                        if song_data.lyrics:
-                            lyrics = song_data.lyrics
-                        else:
-                            lyrics = "Genius şarkıyı buldu ama sözleri çekemedi."
-                    else:
-                        lyrics = "Genius şarkıyı bulamadı."
+                    if song_data and song_data.lyrics:
+                        lyrics = song_data.lyrics
 
                 except Exception as e:
                     print("LYRICS ERROR:", repr(e))
-                    lyrics = "Sözler yüklenemedi"
+                    lyrics = "Söz bulunamadı"
+
+                if lyrics == "Söz bulunamadı":
+                    try:
+                        response = requests.get(
+                            "https://lrclib.net/api/search",
+                            params={
+                                "track_name": song_name,
+                                "artist_name": artist
+                            },
+                            headers={
+                                "User-Agent": "Sieve/1.0"
+                            },
+                            timeout=15
+                        )
+
+                        data = response.json()
+
+                        if data:
+                            lyrics = (
+                                data[0].get("plainLyrics")
+                                or data[0].get("syncedLyrics")
+                                or "Söz bulunamadı"
+                            )
+
+                    except Exception as e:
+                        print("LRCLIB ERROR:", repr(e))
+                        lyrics = "Sözler yüklenemedi"
 
                 # 🚫 FILTER CHECK
                 if user_filters and any(word in lyrics.lower() for word in user_filters):
