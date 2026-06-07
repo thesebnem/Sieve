@@ -30,7 +30,12 @@ sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
 ))
 
 # 🎤 Genius setup
-genius = lyricsgenius.Genius(GENIUS_TOKEN, timeout=15)
+genius = lyricsgenius.Genius(
+    GENIUS_TOKEN,
+    timeout=30,
+    retries=3,
+    remove_section_headers=True
+)
 genius.skip_non_songs = True
 genius.excluded_terms = ["(Remix)", "(Live)"]
 
@@ -310,7 +315,7 @@ def home():
                 lyrics = "Söz bulunamadı"
 
                 try:
-                    song_data = genius.search_song(song_name)
+                    song_data = genius.search_song(song_name, artist)
 
                     print(song_data)
 
